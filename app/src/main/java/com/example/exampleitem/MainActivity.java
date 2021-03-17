@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private ExampleAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private Button buttonInsert;
+    private EditText editTextInsert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,9 +26,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         createExampleList();
         buildRecyclerView();
+        setButtons();
+        buttonInsert = findViewById(R.id.button_insert);
 
+        editTextInsert = findViewById(R.id.edittext_insert);
+        buttonInsert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = Integer.parseInt(editTextInsert.getText().toString());
+                insertItem(position);
+            }
+        });
     }
-
+    public void insertItem(int position) {
+        mExampleList.add(position, new ExampleItem(R.drawable.ic_android, "New Item At Position" + position, "This is Line 2"));
+        mAdapter.notifyItemInserted(position);
+    }
     public void removeItem(int position) {
         mExampleList.remove(position);
         mAdapter.notifyItemRemoved(position);
@@ -33,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     public void changeItem(int position, String text) {
         mExampleList.get(position).changeText1(text);
         mAdapter.notifyItemChanged(position);
+
     }
     public void createExampleList() {
         mExampleList = new ArrayList<>();
@@ -62,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.setOnItemClickListener(new ExampleAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
+                Intent intent = new Intent(MainActivity.this,NoteActivity.class);
+                intent.putExtra("selected_note",mExampleList.get(position).getText1());
+                startActivity(intent);
                 changeItem(position, "Clicked");
             }
             @Override
@@ -69,6 +89,18 @@ public class MainActivity extends AppCompatActivity {
                 removeItem(position);
             }
         });
+    }
+    public void setButtons() {
+        buttonInsert = findViewById(R.id.button_insert);
+        buttonInsert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int position = Integer.parseInt(buttonInsert.getText().toString());
+                insertItem(position);
+            }
+        });
+
     }
 
 }
